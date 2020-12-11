@@ -48,8 +48,14 @@ while cap.isOpened():
   # Draw the hand annotations on the image.
   image.flags.writeable = True
   image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+  image_hight, image_width, _ = image.shape
   if results.multi_hand_landmarks:
     for hand_landmarks in results.multi_hand_landmarks:
+      print(
+        f'Index finger tip coordinates: (',
+        f'{hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].x * image_width}, '
+        f'{hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].y * image_hight})'
+      )
       mp_drawing.draw_landmarks(
           image, hand_landmarks, mp_hands.HAND_CONNECTIONS)
   cv2.imshow('MediaPipe Hands', image)
