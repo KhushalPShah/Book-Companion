@@ -3,6 +3,7 @@ import numpy as np
 import argparse
 import imutils
 import cv2
+import time
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--images", type=str, required=True,
@@ -12,19 +13,28 @@ ap.add_argument("-o", "--output", type=str, required=True,
 args = vars(ap.parse_args())
 
 print("[INFO] loading images...")
+
+start = time.time()
+
+
 imagePaths = sorted(list(paths.list_images(args["images"])))
 images = []
 # loop over the image paths, load each one, and add them to our
 # images to stitch list
+i = 0
 for imagePath in imagePaths:
+	i = i + 1
 	image = cv2.imread(imagePath)
 	images.append(image)
-
+print ("No of Images : ",i)
 # initialize OpenCV's image stitcher object and then perform the image
 # stitching
 print("[INFO] stitching images...")
 stitcher = cv2.createStitcher() if imutils.is_cv3() else cv2.Stitcher_create()
 (status, stitched) = stitcher.stitch(images)
+
+end = time.time()
+print("Elapsed : ",end - start)
 
 # if the status is '0', then OpenCV successfully performed image
 # stitching
