@@ -30,13 +30,17 @@ else:
 
 videoPath = args["input"]
 vidcap = cv2.VideoCapture(videoPath)
+total = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
+print("Total : ", total)
 success, image = vidcap.read()
 # Use the first image. Hence make count as 0.
 # When the image is blurred, then the SIFT does not work well.
 count = 0
 while success:
     success, image = vidcap.read()
-    if count%50 == 0:
+    if count%25 == 0 or count == total:
         cv2.imwrite("im/"+imageName +"/image_%d.jpg" % count, image)    
         print('Saved image ', count)
-    count += 1
+    count = count + 1
+print(count)
+vidcap.release()

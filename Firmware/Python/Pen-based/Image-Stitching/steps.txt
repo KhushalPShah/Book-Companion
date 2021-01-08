@@ -1,5 +1,5 @@
 1. Capture a video (.mp4 format), and save it in the videos folder.
-2. Run: python video_to_images.py --i video/<name_of_video_file> --n <name_of_folder>
+2. Run: python video_to_images.py --i videos/<name_of_video_file>.mp4 --n <name_of_folder>
    This will create a new folder inside the /im directory, with the name defined by <name>
    If there exists a folder with the same name, then it will delete all the contents of that folder. 
 3. Run: python stitching2.py --i im/<name> --o outputs/<name.jpg>
