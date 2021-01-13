@@ -1,0 +1,4 @@
+mediapipe==0.8.2
+pytesseract==0.3.7
+opencv_python==3.4.2.17
+PyDictionary==2.0.1
