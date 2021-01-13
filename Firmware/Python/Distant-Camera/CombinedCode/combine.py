@@ -2,27 +2,25 @@ import cv2
 import mediapipe as mp
 import pytesseract
 from pytesseract import Output
+from PyDictionary import PyDictionary
+import constants
+# The below line must be uncommented for executing the code on Windows.
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
 mp_drawing = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
-from PyDictionary import PyDictionary
-# The below line must be uncommented for executing the code on Windows.
-# pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-
-#CONSTANTS
-Dis_btw_fingerCoordinates=2
-
 
 def ocr(X,Y,image):
 
   # For Cropping the image
-  XLeft=int(X-100)
-  X_right=int(X+100)
-  Y_up=int(Y-15)
-  Y_down=int(Y-100)
+  XLeft=int(X-constants.CROP_DISTANCE_LEFT)
+  X_right=int(X+constants.CROP_DISTANCE_RIGHT)
+  Y_up=int(Y-constants.CROP_DISTANCE_BOTTOM)
+  Y_down=int(Y-constants.CROP_DISTANCE_TOP)
   image = image[Y_down:Y_up, XLeft:X_right]
 
   #To scale the image
-  scale_percent = 200
+  scale_percent = constants.ZOOM_PERCENTAGE * 100
   width = int(image.shape[1] * scale_percent / 100)
   height = int(image.shape[0] * scale_percent / 100)
   dsize = (width, height)
@@ -33,10 +31,10 @@ def ocr(X,Y,image):
   n_boxes = len(d['text'])
   img = image
 
-  X=200
+  X=constants.CROPPED_IMAGE_CENTRE
   markedWord=""
   for i in range(n_boxes):
-      if int(d['conf'][i]) > 60:
+      if int(d['conf'][i]) > constants.OCR_CONFIDENCE * 100:
           (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
           # print(d['text'][i])
           # print("X=(",x,",",x+w,") Y=(",y,",",y+h,")")
@@ -59,7 +57,7 @@ prev_x=0
 prev_y=0
 count=0
 hands = mp_hands.Hands(
-    min_detection_confidence=0.7, min_tracking_confidence=0.5)
+    min_detection_confidence=constants.FINGER_DETECTION_CONFIDENCE, min_tracking_confidence=constants.FINGER_TRACKING_CONFIDENCE)
 cap = cv2.VideoCapture('test.mp4')
 while cap.isOpened():
   success, image = cap.read()
@@ -86,12 +84,12 @@ while cap.isOpened():
       cur_x=hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].x * image_width
       cur_y=hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].y * image_hight
 
-      if (((cur_x-prev_x)**2+(cur_y-prev_y)**2)**0.5)<Dis_btw_fingerCoordinates:
+      if (((cur_x-prev_x)**2+(cur_y-prev_y)**2)**0.5)<constants.PERMISSIBLE_FINGER_MOVEMENT:
         count=count+1
       else:
         count=0
 
-      if count==10:
+      if count == constants.MIN_STEADY_FINGER_COUNT:
         ocr(cur_x, cur_y, image)
         count=0
 
