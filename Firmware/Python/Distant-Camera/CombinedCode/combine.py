@@ -5,6 +5,8 @@ from pytesseract import Output
 mp_drawing = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
 from PyDictionary import PyDictionary
+# The below line must be uncommented for executing the code on Windows.
+# pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 #CONSTANTS
 Dis_btw_fingerCoordinates=2
