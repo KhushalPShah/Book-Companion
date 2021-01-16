@@ -48,12 +48,7 @@ def ocr(X,Y,image):
               markedWord=d['text'][i]
             #break
           img = cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-  #Removing Punctuation
-  # if not markedWord.isalpha():
-  #   punc = '''!()-[]{};:'"\, <>./?@#$%^&*_~'''
-  #   for ele in markedWord:  
-  #     if ele in punc:
-  #       markedWord = markedWord.replace(ele, "")
+          
   print(markedWord)
   # dict = PyDictionary() 
   # meaning = dict.meaning(markedWord) 
