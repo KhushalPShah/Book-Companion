@@ -72,14 +72,25 @@ ap.add_argument("-v", "--video",type=str, required=True,help="videos/test.mp4")
 args = vars(ap.parse_args())
 video = args["video"]
 
+
+def rescale_frame(frame, percent=75):
+    width = int(frame.shape[1] * percent/ 100)
+    height = int(frame.shape[0] * percent/ 100)
+    dim = (width, height)
+    return cv2.resize(frame, dim, interpolation =cv2.INTER_AREA)
+
 cap = cv2.VideoCapture(video)
 while cap.isOpened():
   success, image = cap.read()
   if not success:
     break
+  # this condition is to be used when there is a need to zoom out.
+  # else:
+  #   image = rescale_frame(image, percent=80)
   # Flip the image horizontally for a later selfie-view display, and convert
   # the BGR image to RGB.
   image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+  # This following part is to be commented if the orientation of the video is straight, and not rotated.
   image=cv2.rotate(image, cv2.cv2.ROTATE_90_CLOCKWISE)
 
   # To improve performance, optionally mark the image as not writeable to
