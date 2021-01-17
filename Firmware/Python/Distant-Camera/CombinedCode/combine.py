@@ -44,10 +44,11 @@ def ocr(X,Y,image):
           if X>=x and X<=x+w :
             # print(d['text'][i])
             # print("X=(",x,",",x+w,") Y=(",y,",",y+h,")")
-            if markedWord=="":
-              markedWord=d['text'][i]
-            #break
-          img = cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            # if markedWord=="":
+            print(d['text'][i])
+            markedWord=d['text'][i]
+            img = cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            break
           
   print(markedWord)
   # dict = PyDictionary() 
@@ -67,7 +68,7 @@ hands = mp_hands.Hands(
 
 #construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
-ap.add_argument("-v", "--video", required=True,help="path to input video eg-/home/$USERNAME$/FYP/Book-Companion/Firmware/Python/Distant-Camera/CombinedCode/test.mp4")
+ap.add_argument("-v", "--video",type=str, required=True,help="videos/test.mp4")
 args = vars(ap.parse_args())
 video = args["video"]
 
