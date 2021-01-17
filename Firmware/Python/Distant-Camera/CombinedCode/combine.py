@@ -4,6 +4,9 @@ import pytesseract
 from pytesseract import Output
 from PyDictionary import PyDictionary
 import constants
+import argparse
+import time
+
 # The below line must be uncommented for executing the code on Windows.
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
@@ -33,7 +36,7 @@ def ocr(X,Y,image):
 
   X=constants.CROPPED_IMAGE_CENTRE
   markedWord=""
-  for i in range(n_boxes):
+  for i in range(n_boxes-1, -1, -1):
       if int(d['conf'][i]) > constants.OCR_CONFIDENCE * 100:
           (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
           # print(d['text'][i])
@@ -41,11 +44,14 @@ def ocr(X,Y,image):
           if X>=x and X<=x+w :
             # print(d['text'][i])
             # print("X=(",x,",",x+w,") Y=(",y,",",y+h,")")
-            markedWord=d['text'][i]
+            if markedWord=="":
+              markedWord=d['text'][i]
+            #break
           img = cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+          
   print(markedWord)
   # dict = PyDictionary() 
-  # meaning = dict.meaning(list1[len(list1)-1][1]) 
+  # meaning = dict.meaning(markedWord) 
   # print("meaning=",meaning) 
 
   # show the output images
@@ -58,12 +64,18 @@ prev_y=0
 count=0
 hands = mp_hands.Hands(
     min_detection_confidence=constants.FINGER_DETECTION_CONFIDENCE, min_tracking_confidence=constants.FINGER_TRACKING_CONFIDENCE)
-cap = cv2.VideoCapture('test.mp4')
+
+#construct the argument parse and parse the arguments
+ap = argparse.ArgumentParser()
+ap.add_argument("-v", "--video", required=True,help="path to input video eg-/home/$USERNAME$/FYP/Book-Companion/Firmware/Python/Distant-Camera/CombinedCode/test.mp4")
+args = vars(ap.parse_args())
+video = args["video"]
+
+cap = cv2.VideoCapture(video)
 while cap.isOpened():
   success, image = cap.read()
   if not success:
     break
-
   # Flip the image horizontally for a later selfie-view display, and convert
   # the BGR image to RGB.
   image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
