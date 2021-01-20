@@ -115,7 +115,8 @@ while cap.isOpened():
 
       if count == constants.MIN_STEADY_FINGER_COUNT:
         ocr(cur_x, cur_y, image)
-        count=0
+        # Removing, so that the next word will be detected only when the finger moves farther than the PERMISSIBLE_FINGER_MOVEMENT
+        # count=0
 
       prev_x=cur_x
       prev_y=cur_y
