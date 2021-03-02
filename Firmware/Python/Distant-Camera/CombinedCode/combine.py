@@ -85,13 +85,14 @@ while cap.isOpened():
   if not success:
     break
   # this condition is to be used when there is a need to zoom out.
-  # else:
-  #   image = rescale_frame(image, percent=80)
+  if constants.RESCALE:
+    image = rescale_frame(image, constants.RESCALE_FACTOR * 100)
   # Flip the image horizontally for a later selfie-view display, and convert
   # the BGR image to RGB.
   image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+  if constants.ROTATE:
   # This following part is to be commented if the orientation of the video is straight, and not rotated.
-  image=cv2.rotate(image, cv2.cv2.ROTATE_90_CLOCKWISE)
+    image=cv2.rotate(image, cv2.cv2.ROTATE_90_CLOCKWISE)
 
   # To improve performance, optionally mark the image as not writeable to
   # pass by reference.

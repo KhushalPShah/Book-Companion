@@ -1,0 +1,10 @@
+For Management.mp4:
+- RESCALE = True
+- Use scaling with RESCALE_FACTOR = 0.6
+- PERMISSIBLE_FINGER_MOVEMENT = 5
+- ROTATE = True
+
+For test.mp4:
+- RESCALE = False
+- PERMISSIBLE_FINGER_MOVEMENT = 2
+- ROTATE = True
