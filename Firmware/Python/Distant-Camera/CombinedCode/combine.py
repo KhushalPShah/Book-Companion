@@ -88,8 +88,25 @@ hands = mp_hands.Hands(
 #construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-v", "--video",type=str, required=True,help="videos/test.mp4")
+ap.add_argument("-d", "--movement", type=int, required=True, help=2)
+ap.add_argument("-c", "--count", type=int, required=True, help=5)
+ap.add_argument("-rs", "--rescale", type=int, required=True, help=0.3)
+ap.add_argument("-rt", "--rotate",type=int ,required=True,help=True)
+
 args = vars(ap.parse_args())
 video = args["video"]
+constants.PERMISSIBLE_FINGER_MOVEMENT = args["movement"]
+constants.MIN_STEADY_FINGER_COUNT = args["count"]
+constants.RESCALE_FACTOR = args["rescale"]
+if args["rotate"]==1:
+  constants.ROTATE = True
+else:
+  constants.ROTATE = False
+
+print("Permissible Movement : ",constants.PERMISSIBLE_FINGER_MOVEMENT)
+print("Steady Count : ",constants.MIN_STEADY_FINGER_COUNT)
+print("Rescale Factor : ",constants.RESCALE_FACTOR)
+print("Rotate : ",constants.ROTATE)
 
 
 def rescale_frame(frame, percent=75):
