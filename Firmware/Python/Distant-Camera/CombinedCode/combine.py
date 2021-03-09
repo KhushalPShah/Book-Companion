@@ -13,8 +13,7 @@ pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\t
 mp_drawing = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
 
-def ocr(X,Y,image):
-
+def ocr(X,Y,image,width):
   # For Cropping the image
   X_left = int(X-constants.CROP_DISTANCE_LEFT)
   X_right = int(X+constants.CROP_DISTANCE_RIGHT)
@@ -22,9 +21,9 @@ def ocr(X,Y,image):
   if X_left < 0:
       X_right = X_right + X_left
       X_left = 0
-  if X_right > 200:
-      X_left = X_left - X_right + 200
-      X_right = 200
+  if X_right > width:
+      X_left = X_left - X_right + width
+      X_right = width
   Y_up=int(Y-constants.CROP_DISTANCE_BOTTOM)
   if Y_up < 0:
       Y_up = 0
@@ -42,10 +41,11 @@ def ocr(X,Y,image):
   dsize = (width, height)
   #resize image
   image = cv2.resize(image, dsize)
-  X = X*constants.ZOOM_PERCENTAGE
-  Y = Y*constants.ZOOM_PERCENTAGE
-  print(X)
-  print(Y)
+  X = width/2
+  #X = X*constants.ZOOM_PERCENTAGE
+  #Y = Y*constants.ZOOM_PERCENTAGE
+  print("Word Coordinates", X)
+  #print(Y)
   #cv2.imshow('temp', image)
 
   d = pytesseract.image_to_data(image, output_type=Output.DICT)
@@ -134,7 +134,7 @@ while cap.isOpened():
         count=0
 
       if count == constants.MIN_STEADY_FINGER_COUNT:
-        ocr(cur_x, cur_y, image)
+        ocr(cur_x, cur_y, image, image_width)
         # Removing, so that the next word will be detected only when the finger moves farther than the PERMISSIBLE_FINGER_MOVEMENT
         # count=0
 
