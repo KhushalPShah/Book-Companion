@@ -1,7 +1,7 @@
 # This is the number of pixels, along which the finger can move while the user tries to hold the finger steady below the required word.
-PERMISSIBLE_FINGER_MOVEMENT = 2
+PERMISSIBLE_FINGER_MOVEMENT = 4
 # This is the number of times for which the detected finger co-ordinate must be within the PERMISSIBLE_FINGER_MOVEMENT
-MIN_STEADY_FINGER_COUNT = 5
+MIN_STEADY_FINGER_COUNT = 2
 
 # These are the number of pixels, from the centre of the detected finger co-ordinate, for cropping the image.
 CROP_DISTANCE_LEFT = 100
@@ -22,10 +22,10 @@ FINGER_TRACKING_CONFIDENCE = 0.5
 OCR_CONFIDENCE = 0.6
 
 # Rescaling Flag
-RESCALE = False
+RESCALE = True
 
 # Rescaling Factor:
-RESCALE_FACTOR = 0.3
+RESCALE_FACTOR = 0.7
 
 # Rotate Flag:
 ROTATE = True

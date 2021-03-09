@@ -8,19 +8,31 @@ import argparse
 import time
 
 # The below line must be uncommented for executing the code on Windows.
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
 
 mp_drawing = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
 
-def ocr(X,Y,image):
-
+def ocr(X,Y,image,width):
   # For Cropping the image
-  XLeft=int(X-constants.CROP_DISTANCE_LEFT)
-  X_right=int(X+constants.CROP_DISTANCE_RIGHT)
+  X_left = int(X-constants.CROP_DISTANCE_LEFT)
+  X_right = int(X+constants.CROP_DISTANCE_RIGHT)
+
+  if X_left < 0:
+      X_right = X_right + X_left
+      X_left = 0
+  if X_right > width:
+      X_left = X_left - X_right + width
+      X_right = width
   Y_up=int(Y-constants.CROP_DISTANCE_BOTTOM)
+  if Y_up < 0:
+      Y_up = 0
   Y_down=int(Y-constants.CROP_DISTANCE_TOP)
-  image = image[Y_down:Y_up, XLeft:X_right]
+  image = image[Y_down:Y_up, X_left:X_right]
+  print("X coordinate of finger", X)
+  print("Y coordinate of finger", Y)
+  print("leftmost coordinate", X_left)
+  print("rightmost coordinate", X_right)
 
   #To scale the image
   scale_percent = constants.ZOOM_PERCENTAGE * 100
@@ -29,31 +41,38 @@ def ocr(X,Y,image):
   dsize = (width, height)
   #resize image
   image = cv2.resize(image, dsize)
+  X = width/2
+  #X = X*constants.ZOOM_PERCENTAGE
+  #Y = Y*constants.ZOOM_PERCENTAGE
+  print("Word Coordinates", X)
+  #print(Y)
+  #cv2.imshow('temp', image)
 
   d = pytesseract.image_to_data(image, output_type=Output.DICT)
   n_boxes = len(d['text'])
   img = image
 
-  X=constants.CROPPED_IMAGE_CENTRE
   markedWord=""
   for i in range(n_boxes-1, -1, -1):
       if int(d['conf'][i]) > constants.OCR_CONFIDENCE * 100:
           (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
-          # print(d['text'][i])
-          # print("X=(",x,",",x+w,") Y=(",y,",",y+h,")")
-          if X>=x and X<=x+w :
+          #print("X=(",x,",",x+w,") Y=(",y,",",y+h,")")
+          #print(d['text'][i])
+          #putting it outside loop for debugging
+          img = cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+          if X >= x and X <= x+w :
             # print(d['text'][i])
             # print("X=(",x,",",x+w,") Y=(",y,",",y+h,")")
             # if markedWord=="":
             print(d['text'][i])
             markedWord=d['text'][i]
-            img = cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            #img = cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
             break
-          
+
   print(markedWord)
-  # dict = PyDictionary() 
-  # meaning = dict.meaning(markedWord) 
-  # print("meaning=",meaning) 
+  # dict = PyDictionary()
+  # meaning = dict.meaning(markedWord)
+  # print("meaning=",meaning)
 
   # show the output images
   cv2.imshow("Out", img)
@@ -115,7 +134,7 @@ while cap.isOpened():
         count=0
 
       if count == constants.MIN_STEADY_FINGER_COUNT:
-        ocr(cur_x, cur_y, image)
+        ocr(cur_x, cur_y, image, image_width)
         # Removing, so that the next word will be detected only when the finger moves farther than the PERMISSIBLE_FINGER_MOVEMENT
         # count=0
 
