@@ -21,11 +21,9 @@ FINGER_DETECTION_CONFIDENCE = 0.7
 FINGER_TRACKING_CONFIDENCE = 0.5
 OCR_CONFIDENCE = 0.6
 
-# Rescaling Flag
-RESCALE = True
-
 # Rescaling Factor:
-RESCALE_FACTOR = 0.7
+RESCALE_FACTOR = 0.2
 
 # Rotate Flag:
-ROTATE = True
+# 1 for Rotate, -1 for No Rotate
+ROTATE = 1

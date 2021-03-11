@@ -8,7 +8,7 @@ import argparse
 import time
 
 # The below line must be uncommented for executing the code on Windows.
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 mp_drawing = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
@@ -88,25 +88,38 @@ hands = mp_hands.Hands(
 #construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-v", "--video",type=str, required=True,help="videos/test.mp4")
-ap.add_argument("-d", "--movement", type=int, required=True, help=2)
-ap.add_argument("-c", "--count", type=int, required=True, help=5)
-ap.add_argument("-rs", "--rescale", type=int, required=True, help=0.3)
-ap.add_argument("-rt", "--rotate",type=int ,required=True,help=True)
+ap.add_argument("-d", "--movement", type=int, help=2)
+ap.add_argument("-c", "--count", type=int, help=5)
+ap.add_argument("-rs", "--rescale", type=float, help=0.3)
+ap.add_argument("-rt", "--rotate",type=int, help=0)
 
 args = vars(ap.parse_args())
 video = args["video"]
-constants.PERMISSIBLE_FINGER_MOVEMENT = args["movement"]
-constants.MIN_STEADY_FINGER_COUNT = args["count"]
-constants.RESCALE_FACTOR = args["rescale"]
-if args["rotate"]==1:
-  constants.ROTATE = True
-else:
-  constants.ROTATE = False
 
-print("Permissible Movement : ",constants.PERMISSIBLE_FINGER_MOVEMENT)
-print("Steady Count : ",constants.MIN_STEADY_FINGER_COUNT)
-print("Rescale Factor : ",constants.RESCALE_FACTOR)
-print("Rotate : ",constants.ROTATE)
+permissible_finger_movement = args["movement"]
+if not permissible_finger_movement:
+  print("PERMISSIBLE_FINGER_MOVEMENT not provided. Taking from constants.py ")
+  permissible_finger_movement = constants.PERMISSIBLE_FINGER_MOVEMENT
+
+min_steady_finger_count = args["count"]
+if not min_steady_finger_count: 
+  print("MIN_STEADY_FINGER_COUNT not provided. Taking from constants.py ")
+  min_steady_finger_count = constants.MIN_STEADY_FINGER_COUNT
+
+rescale_factor = args["rescale"]
+if not rescale_factor:
+  print("RESCALE_FACTOR not provided. Taking from constants.py ")
+  rescale_factor = constants.RESCALE_FACTOR
+
+rotate = args["rotate"]
+if not rotate:
+  print("ROTATE not provided. Taking from constants.py ")
+  rotate = constants.ROTATE
+
+print("Permissible Movement : ",permissible_finger_movement)
+print("Steady Count : ",min_steady_finger_count)
+print("Rescale Factor : ",rescale_factor)
+print("Rotate : ",rotate)
 
 
 def rescale_frame(frame, percent=75):
@@ -121,13 +134,13 @@ while cap.isOpened():
   if not success:
     break
   # this condition is to be used when there is a need to zoom out.
-  if constants.RESCALE:
-    image = rescale_frame(image, constants.RESCALE_FACTOR * 100)
+  image = rescale_frame(image, rescale_factor * 100)
   # Flip the image horizontally for a later selfie-view display, and convert
   # the BGR image to RGB.
   image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-  if constants.ROTATE:
+  
   # This following part is to be commented if the orientation of the video is straight, and not rotated.
+  if rotate == 1:
     image=cv2.rotate(image, cv2.cv2.ROTATE_90_CLOCKWISE)
 
   # To improve performance, optionally mark the image as not writeable to
@@ -145,12 +158,12 @@ while cap.isOpened():
       cur_x=hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].x * image_width
       cur_y=hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP].y * image_hight
 
-      if (((cur_x-prev_x)**2+(cur_y-prev_y)**2)**0.5)<constants.PERMISSIBLE_FINGER_MOVEMENT:
+      if (((cur_x-prev_x)**2+(cur_y-prev_y)**2)**0.5)<permissible_finger_movement:
         count=count+1
       else:
         count=0
 
-      if count == constants.MIN_STEADY_FINGER_COUNT:
+      if count == min_steady_finger_count:
         ocr(cur_x, cur_y, image, image_width)
         # Removing, so that the next word will be detected only when the finger moves farther than the PERMISSIBLE_FINGER_MOVEMENT
         # count=0
